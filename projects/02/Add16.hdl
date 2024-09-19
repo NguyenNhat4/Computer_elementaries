@@ -1,0 +1,25 @@
+CHIP Add16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    Add4 (a=a[0..3], b=b[0..3], cin=false, sum=out[0..3], p=p0, g=g0);
+    And (a=p0, b=false, out=c0Andp0);
+    Or (a=g0, b=c0Andp0, out=c4);
+
+    Add4 (a=a[4..7], b=b[4..7], cin=c4, sum=out[4..7], p=p4, g=g4);
+    And (a=g0, b=p4,out=g0Andp4);
+    And (a=c0Andp0, b=p4, out=c0Andp0Andp4);
+    Or (a=g4, b=g0Andp4, out=c8f);
+    Or (a=c8f, b=c0Andp0Andp4, out=c8);
+
+    Add4 (a=a[8..11], b=b[8..11], cin=c8, sum=out[8..11], p=p8, g=g8);
+    And (a=g4, b=p8, out=g4Andp8);
+    And (a=g0Andp4, b=p8, out=g0Andp4Andp8);
+    And (a=c0Andp0Andp4, b=p8, out=c0Andp0Andp4Andp8);
+    Or (a=g8, b=g4Andp8, out=c12f);
+    Or (a=g0Andp4Andp8, b=c0Andp0Andp4Andp8, out=c12l);
+    Or (a=c12f, b=c12l, out=c12);
+
+    Add4 (a=a[12..15], b=b[12..15], cin=c12, sum=out[12..15], p=false, g=false);
+}

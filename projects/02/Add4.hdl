@@ -1,0 +1,42 @@
+CHIP Add4 {
+    IN a[4], b[4], cin;
+    OUT sum[4], p, g;
+
+    PARTS:
+    FullAdder (a=a[0], b=b[0], c=cin, sum=sum[0], carry=g0);
+    Xor (a=a[0], b=b[0], out=p0);
+    And (a=cin, b=p0, out=c0Andp0);
+    Or (a=g0, b=c0Andp0, out=c1);
+
+    FullAdder (a=a[1], b=b[1], c=c1, sum=sum[1], carry=g1);
+    Xor (a=a[1], b=b[1], out=p1);
+    And (a=g0, b=p1, out=g0Andp1);
+    And (a=c0Andp0, b=p1, out=c0Andp0Andp1);
+    Or (a=g1,b=g0Andp1,out=g1Org0Andp1);
+    Or (a=g1Org0Andp1, b=c0Andp0Andp1, out=c2);
+
+    FullAdder (a=a[2], b=b[2], c=c2, sum=sum[2], carry=g2);
+    Xor (a=a[2], b=b[2], out=p2);
+    And (a=g1, b=p2, out=g1Andp2);
+    And (a=g0Andp1, b=p2, out=g0Andp1Andp2);
+    And (a=c0Andp0Andp1, b=p2, out=c0Andp0Andp1Andp2);
+    Or (a=g2, b=g1Andp2, out=c3f);
+    Or (a=g0Andp1Andp2, b=c0Andp0Andp1Andp2, out=c3l);
+    Or (a=c3f, b=c3l, out=c3);
+
+    FullAdder (a=a[3], b=b[3], c=c3, sum=sum[3], carry=g3);
+    Xor (a=a[3], b=b[3],out=p3);
+
+    // group propagate
+    And (a=p3, b=p2, out=p3Andp2);
+    And (a=p1, b=p0, out=p1Andp0);
+    And (a=p3Andp2, b=p1Andp0, out=p);
+
+    // group generate
+    And (a=g2, b=p3, out=g2Andp3);
+    And (a=g1Andp2, b=p3, out=g1Andp2Andp3);
+    And (a=g0Andp1Andp2, b=p3, out=g0Andp1Andp2Andp3);
+    Or (a=g3, b=g2Andp3, out=gf);
+    Or (a=g1Andp2Andp3, b=g0Andp1Andp2Andp3, out=gl);
+    Or (a=gf, b=gl, out=g);
+}
